@@ -1,17 +1,20 @@
 const express=require("express");
+const { adminAuth, userAuth } = require("./middlewares/auth");
 
 const app=express();
 
-app.use("/user/:id",
-    (req,res,next)=>{
-        console.log("REQUEST PARAMS:",req.params);
-        next();
-        res.send("Response from 1st one");
-    },
-    (req,res)=>{
-        console.log("REQUEST PARAMS2nd:",req.params);
-        res.send("Response from 2nd one");
-    })
+
+app.get("/getUser",(req,res)=>{
+    throw new Error("ABCD");
+})
+
+app.use("/",(err,req,res,next)=>{
+    if(err){
+        console.log(err);
+        res.status(500).send(err.message);
+    }
+})
+
 
 app.listen(3000,(req,res)=>{
     console.log("Server is started");
