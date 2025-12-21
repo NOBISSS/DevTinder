@@ -1,0 +1,23 @@
+package.json:
+version of package
+^4.19.2
+ ^4    .19   .2
+Major-Minor-Patch
+
+
+suppose express has fix some bug then it change the patch means from 2 to 3 or any number it increase by one version
+
+when express has created any feature the minor version number increases
+Major changes are done when breaking changes
+
+^-carret :Minor and Patch versions are upgraded it-self auto-update
+~-Tilde :it only upgrades patch level updates
+
+
+PUT AND PATCH METHOD :
+PUT WILL REPLACE ENTIRE OBJECT BY GIVEN DATA
+
+PATCH WILL JUST ADD THAT DATA INTO EXISTING OBJECT WITHOUT REPLACING ENTIRE OBJECT 
+
+package-lock.json:
+this file gives you the exact version of packages and package.json file just give you static version means it doesn't affect when packages are updated or something so you never know that is it update or not to check this package-lock.json is used
