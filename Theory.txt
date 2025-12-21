@@ -21,3 +21,41 @@ PATCH WILL JUST ADD THAT DATA INTO EXISTING OBJECT WITHOUT REPLACING ENTIRE OBJE
 
 package-lock.json:
 this file gives you the exact version of packages and package.json file just give you static version means it doesn't affect when packages are updated or something so you never know that is it update or not to check this package-lock.json is used
+
+
+EP:Routing and Request handler
+
+shall we push our package-lock.json file on github ?
+package.json vs package-lock.json
+
+
+Orders are important in Routes
+
+
+for testing our api's and route we use POSTMAN
+
+Advance Routing Technique
+
+app.get("/ab?c");
+this means that the b is optional so even if you have routes like /abc or /ac it works
+
+app.get("/ab+c");
+this means you can add as many b you want
+like /abc
+     /abbbbc
+     /abbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbc
+
+app.get("/ab*cd");
+this meand if you write anything between abcd it works even through
+like /abcd -simple case
+     /abPARTHCHAUHANcd -still work
+     etc,..
+in short it starts with ab and ends with cd
+
+app.get("/a(bc)?d");
+means bc is optional
+and if you writing b you have to write c too
+
+app.get(/a/)
+if in the path a is exist it run 
+    
