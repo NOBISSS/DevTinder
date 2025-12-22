@@ -59,3 +59,10 @@ and if you writing b you have to write c too
 app.get(/a/)
 if in the path a is exist it run 
     
+
+EP:Authentication and JWT AND Cookies
+
+TOKEN IS DIVIDED INTO 3 THINGS
+RED:HEADER,
+PINK:DATA,
+BLUE:SIGNATURE
