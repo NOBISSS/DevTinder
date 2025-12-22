@@ -14,26 +14,22 @@ const userSchema=new mongoose.Schema({
         unique:true,
         required:true,
         trim:true,
-        validate(value){
-            if(!validator.isEmail(value)){
-                throw new Error("Invalid Email Address"+value)
-            }
-        }
     },  
     password:{
         type:String,
         required:true,
-         validate(value){
-            if(!validator.isStrongPassword(value)){
-                throw new Error("Enter Strong password"+value)
-            }
-        }
     },
     age:{
         type:Number,
+        min:18
     },
     gender:{
         type:String,
+        validate(value){
+            if(!["male","female","other"].includes(value)){
+                throw new Error("Please Enter Valid Gender")
+            }
+        }
     },
     photoUrl:{
         type:String,
