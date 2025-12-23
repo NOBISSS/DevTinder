@@ -8,11 +8,10 @@ authRouter
 profileRouter
 - GET /profile/view
 - PATCH /profile/edit
-- PATCH /profile/password
+- PATCH /profile/password //forgot password API
 
 connectionRequestRouter
-- POST/request/send/interested/:userId
-- POST/request/send/ignore/:userId
+- POST/request/send/:status/:userId
 - POST/request/review/accepted/:requestId
 - POST/request/review/rejected/:requestId
 

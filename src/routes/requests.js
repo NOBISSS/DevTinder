@@ -1,13 +1,54 @@
 const express=require("express");
 const { userAuth } = require("../middlewares/auth");
+const ConnectionRequestModal = require("../models/connectionRequest");
+const User = require("../models/user");
 const requestsRouter=express.Router();
 
-requestsRouter.post("/sendconnectionrequest", userAuth, async (req, res) => {
+requestsRouter.post("/request/send/:status/:toUserId", userAuth, async (req, res) => {
     try {
-        console.log("SEND CONNECTION");
-        res.send("CONNECTION REQUEST SENT BY:" + req.user.firstName);
+        const fromUserId=req.user._id;
+        const toUserId=req.params.toUserId;
+        const status=req.params.status;
+
+        const allowedStatus=["ignored","interested"];
+        if(!allowedStatus.includes(status)){
+            return res.status(400).json({message:"Invalid Status Type:"+status})
+        }
+
+        const toUser=await User.findById(toUserId);
+        if(!toUser){
+            return res.status(404).json({message:"User not found"})
+        }
+
+        //IF there is an existing ConnectionRequest
+        const existingConnectionRequest=await ConnectionRequestModal.findOne({
+            $or:[
+                {fromUserId,toUserId},
+                {fromUserId:toUserId,toUserId:fromUserId}  
+            ],
+            });
+            console.log(existingConnectionRequest);
+            if(existingConnectionRequest){
+                return res.status(400).json({message:"Connection Request Already Exists"});
+            }
+        
+
+        const connectionRequest=new ConnectionRequestModal({
+            fromUserId,
+            toUserId,
+            status
+        });
+        const data=await connectionRequest.save();
+
+        res.status(200).json({
+            success:true,
+            message:req.user.firstName+" is "+status+" in "+toUser.firstName,
+            data
+        })
+
     } catch (error) {
-        res.send("ERROR:" + error.message);
+        console.log(error);
+        res.status(400).send("ERROR:" + error.message);
     }
 })
 

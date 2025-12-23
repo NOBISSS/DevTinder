@@ -12,6 +12,21 @@ const validateSignUpData=(req)=>{
     }
 }
 
+const validateEditProfileData=(req)=>{
+    const AllowedEditFiels=["firstName","lastName","emailId","photoUrl","gender","age","about","skills"];
+    const isEditAllowed=Object.keys(req.body).every(k=>AllowedEditFiels.includes(k));
+    return isEditAllowed;
+}
+
+const validatePasswordStrength=(newPassword)=>{
+    const isPasswordStrong=validator.isStrongPassword(newPassword);
+    return isPasswordStrong;
+}
+
+
+
 module.exports={
-    validateSignUpData
+    validateSignUpData,
+    validateEditProfileData,
+    validatePasswordStrength
 }

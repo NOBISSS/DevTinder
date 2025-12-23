@@ -27,11 +27,10 @@ const userSchema = new mongoose.Schema({
     },
     gender: {
         type: String,
-        validate(value) {
-            if (!["male", "female", "other"].includes(value)) {
-                throw new Error("Please Enter Valid Gender")
-            }
-        }
+        enum:{
+            values:["male","female","other"],
+            message:`{VALUE} is not a valid gender type`,
+        },
     },
     photoUrl: {
         type: String,
@@ -50,6 +49,8 @@ const userSchema = new mongoose.Schema({
     }
 })
 
+userSchema.index({firstName:1,lastName:1});
+
 userSchema.methods.getJWT = async function () {
     const user=this;
     const token=await jwt.sign({ _id: user._id }, "DEV@TINDER$790", { expiresIn: "7d" })
@@ -57,13 +58,27 @@ userSchema.methods.getJWT = async function () {
 }
 
 userSchema.methods.validatePassword = async function (password) {
-    const user=this;
-    const passwordHash=user.password;
-    const isPasswordValid=await bcrypt.compare(password,passwordHash);
+    console.log("CALLED");
+    const isPasswordValid=await bcrypt.compare(password,this.password);
     if(!isPasswordValid){
-        throw new Error("Invalid Credentials")
+        throw new Error("Invalid Current Password");
     } 
     return isPasswordValid;
+}
+
+userSchema.methods.hashPassword=async function(newPassword){
+    try{
+    this.password=await bcrypt.hash(newPassword,10);
+    await this.save();
+    return true;
+    }catch(error){
+        console.log("Error:"+error.message);
+        return false;
+    }
+}
+
+userSchema.methods.isSamePassword=async function(newPassword){
+    return await bcrypt.compare(newPassword,this.password);
 }
 
 module.exports = mongoose.model("User", userSchema);
