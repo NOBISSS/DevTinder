@@ -2,6 +2,7 @@ const express=require("express");
 const { userAuth } = require("../middlewares/auth");
 const ConnectionRequestModal = require("../models/connectionRequest");
 const { connection } = require("mongoose");
+const User = require("../models/user");
 const userRoutes=express.Router();
 
 
@@ -51,6 +52,20 @@ userRoutes.get("/user/requests/connections",userAuth,async(req,res)=>{
     }catch(error){
         console.log("error:"+error.message);
         return res.status(400).json({success:false,message:"Error"+error.message});
+    }
+})
+
+userRoutes.get("/user/feed",userAuth,async(req,res)=>{
+    try{
+        const loggedUser=req.user;
+        
+        res.json({message:"FEED",feed});
+    }catch(error){
+        console.log("ERROR::"+error.message);
+        return res.status(400).json({
+            success:false,
+            message:'ERROR'+error.message
+        })
     }
 })
 
