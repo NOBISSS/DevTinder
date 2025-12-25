@@ -14,7 +14,10 @@ const userAuth=async(req,res,next)=>{
     try{
     const {token}=req.cookies;
     if(!token){
-        throw new Error("Token is not Valid");
+        return res.status(401).json({
+            success:false,
+            message:"Please Login"
+        })
     }
     const decoded=jwt.verify(token,"DEV@TINDER$790");
     const user=await User.findById(decoded);

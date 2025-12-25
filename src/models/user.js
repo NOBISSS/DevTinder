@@ -61,7 +61,7 @@ userSchema.methods.validatePassword = async function (password) {
     console.log("CALLED");
     const isPasswordValid=await bcrypt.compare(password,this.password);
     if(!isPasswordValid){
-        throw new Error("Invalid Current Password");
+        throw new Error("Invalid Password");
     } 
     return isPasswordValid;
 }

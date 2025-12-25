@@ -58,7 +58,10 @@ userRoutes.get("/user/requests/connections",userAuth,async(req,res)=>{
 userRoutes.get("/user/feed",userAuth,async(req,res)=>{
     try{
         const loggedInUser=req.user;
-        
+        const page=parseInt(req.query.page) || 1;
+        let limit=parseInt(req.query.limit) || 10;
+        limit=limit>50 ? 50 :limit;
+        const skip=(page-1)*limit;
         const connectionRequest=await ConnectionRequestModal.find({
             $or:[
                 {fromUserId:new mongoose.Types.ObjectId(loggedInUser._id)},
@@ -71,15 +74,14 @@ userRoutes.get("/user/feed",userAuth,async(req,res)=>{
             HideUserFromFeed.add(req.fromUserId.toString());
             HideUserFromFeed.add(req.toUserId.toString());
         });
-        console.log(HideUserFromFeed);
 
         const user=await User.find({
             $and:[
                 {_id:{$nin:Array.from(HideUserFromFeed)}},
                 {_id:{$ne:loggedInUser._id}}]
-        }).select(USER_SAFE_DATA);
+        }).select(USER_SAFE_DATA).skip(skip).limit(limit);
 
-        res.json({message:"FEED",connectionRequest,loggedInUser,user});
+        res.json({message:"FEED",user});
     }catch(error){
         console.log("ERROR::"+error.message);
         return res.status(400).json({
