@@ -4,10 +4,14 @@ const { validateEditProfileData, validatePasswordStrength } = require("../utils/
 const User = require("../models/user");
 const profileRouter = express.Router();
 
-profileRouter.get("/profile", userAuth, async (req, res) => {
+profileRouter.get("/profile/view", userAuth, async (req, res) => {
     try {
         const user = req.user;
-        res.send("USER: " + user);
+        res.json({
+            success:true,
+            message:"USER'S PROFILE FETCHED SUCCESSFULLY",
+            user
+        });
     } catch (error) {
         console.log(error.message);
         res.send("Invalid Cookie");

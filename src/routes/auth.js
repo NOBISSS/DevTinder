@@ -19,6 +19,11 @@ authRouter.post("/signup", async (req, res) => {
             lastName: req.body.lastName,
             emailId: req.body.emailId,
             password: passwordHash,
+            gender:req.body.gender,
+            photoUrl:req.body.photoUrl,
+            age:req.body.age,
+            about:req.body.about,
+            skills:req.body.skills
         });
 
         await user.save();
@@ -42,13 +47,17 @@ authRouter.post("/login", async (req, res) => {
         if (isPasswordValid) {
             const token = await user.getJWT();
             res.cookie("token", token);
-            res.send("Password is correct || Logged Successfully");
+            res.status(200).json({
+                success:true,
+                message:"Logged Successfully",
+                user:user
+            })
         } else {
             throw new Error("Please Enter Correct Password");
         }
     } catch (error) {
         console.log("error", error.message);
-        res.status(400).send("Error:" + error.message);
+        res.status(400).json({success:false,message:error.message});
     }
 })
 
