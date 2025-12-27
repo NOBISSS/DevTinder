@@ -48,7 +48,7 @@ userRoutes.get("/user/requests/connections",userAuth,async(req,res)=>{
                 return row.fromUserId;
         });
 
-        res.json({success:true,message:"Fetched Successfully",data});
+        res.json({success:true,message:"Fetched Successfully",connections:data});
     }catch(error){
         console.log("error:"+error.message);
         return res.status(400).json({success:false,message:"Error"+error.message});
