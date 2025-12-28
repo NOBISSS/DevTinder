@@ -43,9 +43,12 @@ userRoutes.get("/user/requests/connections",userAuth,async(req,res)=>{
         }).populate("fromUserId",USER_SAFE_DATA)
         .populate("toUserId",USER_SAFE_DATA);
 
+        // Filter out connections with deleted users, then extract the OTHER user (not the logged-in user)
         const data=connections
-            .filter((row) => row.fromUserId && row.toUserId) // Filter out any connections with deleted users
+            .filter((row) => row.fromUserId && row.toUserId) // Sanitize: Filter out any connections with deleted users
             .map((row)=>{
+                // If logged-in user is the sender (fromUserId), return the recipient (toUserId)
+                // Otherwise, logged-in user is the recipient, so return the sender (fromUserId)
                 if(row.fromUserId._id.toString()===loggedInUser._id.toString()){
                     return row.toUserId;
                 }
