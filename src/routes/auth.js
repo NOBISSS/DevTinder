@@ -4,35 +4,49 @@ const User=require("../models/user");
 const bcrypt=require("bcrypt");
 const jwt=require("jsonwebtoken");
 const { validateSignUpData } = require("../utils/validation");
-
-authRouter.post("/signup", async (req, res) => {
+const {uploadToCloudinary} =require("../config/cloudinaryUpload");
+const upload=require("../middlewares/upload");
+authRouter.post("/signup",upload.single("photo"), async (req, res) => {
     try {
         //validation
+        console.log("REQ:::",req);
         validateSignUpData(req);
-        const { password } = req.body;
+        const {firstName,lastName,emailId,password,age,gender,about,skills}=req.body;
+        const skillsArray=typeof skills==='string' ? JSON.parse(skills) : skills;
+        let photoUrl=null;
+        console.log("REQFILE:",req.file);
+        if(req.file){
+            photoUrl=await uploadToCloudinary(req.file.buffer,'devtinder/users');
+        }
         //encrypt password
         console.log(req.body);
         const passwordHash = await bcrypt.hash(password, 10);
 
         const user = new User({
-            firstName: req.body.firstName,
-            lastName: req.body.lastName,
-            emailId: req.body.emailId,
+            firstName: firstName,
+            lastName: lastName,
+            emailId: emailId,
             password: passwordHash,
-            gender:req.body.gender,
-            photoUrl:req.body.photoUrl,
-            age:req.body.age,
-            about:req.body.about,
-            skills:req.body.skills
+            gender: gender,
+            photoUrl: photoUrl,
+            age: age,
+            about: about,
+            skills: skills
         });
 
         await user.save();
-
+        const userResponse=user.toObject();
+        delete userResponse.password;
+        res.status(201).json({
+            success:true,
+            message:"User Created Successfully",
+            user:userResponse
+        });
     } catch (error) {
         console.log(error);
         res.status(400).send("ERROR:" + error.message);
     }
-    res.send("Done");
+    
 })
 
 authRouter.post("/login", async (req, res) => {
