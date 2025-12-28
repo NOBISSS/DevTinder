@@ -12,11 +12,12 @@ const USER_SAFE_DATA="firstName lastName photoUrl age gender about skills";
 userRoutes.get("/user/requests/received",userAuth,async (req,res)=>{
     try{
     const loggedInUser=req.user;
-    const connectionRequest=await ConnectionRequestModal.find({toUserId:loggedInUser._id,status:"interested"})
+    const loggedInUserId = new mongoose.Types.ObjectId(loggedInUser._id);
+    const connectionRequest=await ConnectionRequestModal.find({toUserId:loggedInUserId,status:"interested"})
     .populate("fromUserId","firstName lastName photoUrl emailId");
     //.populate("fromUserId",["firstName","lastName"]);
 
-    if(!connectionRequest){
+    if(connectionRequest.length === 0){
         return res.status(404).json({
             success:false,
             message:"No Connection Requests found"
@@ -33,20 +34,23 @@ userRoutes.get("/user/requests/received",userAuth,async (req,res)=>{
 userRoutes.get("/user/requests/connections",userAuth,async(req,res)=>{
     try{
         const loggedInUser=req.user;
+        const loggedInUserId = new mongoose.Types.ObjectId(loggedInUser._id);
         const connections=await ConnectionRequestModal.find({
             $or:[
-                {fromUserId:loggedInUser._id,status:"accepted"},
-                {toUserId:loggedInUser._id,status:"accepted"},
+                {fromUserId:loggedInUserId,status:"accepted"},
+                {toUserId:loggedInUserId,status:"accepted"},
             ],
         }).populate("fromUserId",USER_SAFE_DATA)
         .populate("toUserId",USER_SAFE_DATA);
 
-        const data=connections.map((row)=>{
-            if(row.fromUserId._id.toString()===loggedInUser._id.toString()){
+        const data=connections
+            .filter((row) => row.fromUserId && row.toUserId) // Filter out any connections with deleted users
+            .map((row)=>{
+                if(row.fromUserId._id.toString()===loggedInUser._id.toString()){
+                    return row.toUserId;
+                }
                 return row.fromUserId;
-            }
-                return row.fromUserId;
-        });
+            });
 
         res.json({success:true,message:"Fetched Successfully",connections:data});
     }catch(error){
@@ -75,9 +79,10 @@ userRoutes.get("/user/feed",userAuth,async(req,res)=>{
             HideUserFromFeed.add(req.toUserId.toString());
         });
 
+        const hideUserIds = Array.from(HideUserFromFeed).map(id => new mongoose.Types.ObjectId(id));
         const user=await User.find({
             $and:[
-                {_id:{$nin:Array.from(HideUserFromFeed)}},
+                {_id:{$nin:hideUserIds}},
                 {_id:{$ne:loggedInUser._id}}]
         }).select(USER_SAFE_DATA).skip(skip).limit(limit);
 

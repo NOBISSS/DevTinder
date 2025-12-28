@@ -66,9 +66,10 @@ requestsRouter.post("/request/review/:status/:requestId",userAuth,async(req,res)
 
         //check requestId
         const requestId=req.params.requestId;
+        const loggedInUserId = loggedInUser._id;
         const connectionRequest=await ConnectionRequestModal.findOne({
             _id:requestId,
-            toUserId:loggedInUser._id,
+            toUserId:loggedInUserId,
             status:"interested"
         });
 

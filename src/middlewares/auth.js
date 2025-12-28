@@ -20,7 +20,7 @@ const userAuth=async(req,res,next)=>{
         })
     }
     const decoded=jwt.verify(token,"DEV@TINDER$790");
-    const user=await User.findById(decoded);
+    const user=await User.findById(decoded._id);
     if(!user){
         throw new Error("Not Found");
     }
