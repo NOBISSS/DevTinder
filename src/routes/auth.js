@@ -2,7 +2,6 @@ const express=require("express");
 const authRouter=express.Router();
 const User=require("../models/user");
 const bcrypt=require("bcrypt");
-const jwt=require("jsonwebtoken");
 const { validateSignUpData } = require("../utils/validation");
 const {uploadToCloudinary} =require("../config/cloudinaryUpload");
 const upload=require("../middlewares/upload");
@@ -34,13 +33,17 @@ authRouter.post("/signup",upload.single("photo"), async (req, res) => {
             skills: skills
         });
 
-        await user.save();
+        const savedUser=await user.save();
+         const token = await savedUser.getJWT();
+        res.cookie("token", token,{
+                expires:new Date(Date.now()+8*3600000)
+        });
         const userResponse=user.toObject();
         delete userResponse.password;
         res.status(201).json({
             success:true,
             message:"User Created Successfully",
-            user:userResponse
+            user:savedUser
         });
     } catch (error) {
         console.log(error);
@@ -60,7 +63,9 @@ authRouter.post("/login", async (req, res) => {
         const isPasswordValid =await user.validatePassword(password);
         if (isPasswordValid) {
             const token = await user.getJWT();
-            res.cookie("token", token);
+            res.cookie("token", token,{
+                expires:new Date(Date.now()+8*3600000)
+            });
             res.status(200).json({
                 success:true,
                 message:"Logged Successfully",
