@@ -5,11 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "node src/app.js",
-<<<<<<< HEAD
-    "dev": "node src/app.js",
-=======
     "dev": "npx nodemon src/app.js",
->>>>>>> 84dee121be07fac4a43d8727508d6e2a8b338565
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
