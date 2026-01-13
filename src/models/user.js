@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 const validator = require("validator");
-const bcrypt=require("bcrypt");
-const jwt=require("jsonwebtoken");
+const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
 const userSchema = new mongoose.Schema({
     firstName: {
         type: String,
@@ -27,9 +27,9 @@ const userSchema = new mongoose.Schema({
     },
     gender: {
         type: String,
-        enum:{
-            values:["male","female","other"],
-            message:`{VALUE} is not a valid gender type`,
+        enum: {
+            values: ["Male", "Female", "Other"],
+            message: `{VALUE} is not a valid gender type`,
         },
     },
     photoUrl: {
@@ -49,36 +49,36 @@ const userSchema = new mongoose.Schema({
     }
 })
 
-userSchema.index({firstName:1,lastName:1});
+userSchema.index({ firstName: 1, lastName: 1 });
 
 userSchema.methods.getJWT = async function () {
-    const user=this;
-    const token=await jwt.sign({ _id: user._id }, "DEV@TINDER$790", { expiresIn: "7d" })
+    const user = this;
+    const token = await jwt.sign({ _id: user._id }, "DEV@TINDER$790", { expiresIn: "7d" })
     return token;
 }
 
 userSchema.methods.validatePassword = async function (password) {
     console.log("CALLED");
-    const isPasswordValid=await bcrypt.compare(password,this.password);
-    if(!isPasswordValid){
+    const isPasswordValid = await bcrypt.compare(password, this.password);
+    if (!isPasswordValid) {
         throw new Error("Invalid Password");
-    } 
+    }
     return isPasswordValid;
 }
 
-userSchema.methods.hashPassword=async function(newPassword){
-    try{
-    this.password=await bcrypt.hash(newPassword,10);
-    await this.save();
-    return true;
-    }catch(error){
-        console.log("Error:"+error.message);
+userSchema.methods.hashPassword = async function (newPassword) {
+    try {
+        this.password = await bcrypt.hash(newPassword, 10);
+        await this.save();
+        return true;
+    } catch (error) {
+        console.log("Error:" + error.message);
         return false;
     }
 }
 
-userSchema.methods.isSamePassword=async function(newPassword){
-    return await bcrypt.compare(newPassword,this.password);
+userSchema.methods.isSamePassword = async function (newPassword) {
+    return await bcrypt.compare(newPassword, this.password);
 }
 
 module.exports = mongoose.model("User", userSchema);

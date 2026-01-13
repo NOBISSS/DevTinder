@@ -33,17 +33,13 @@ authRouter.post("/signup",upload.single("photo"), async (req, res) => {
             skills: skills
         });
 
-        const savedUser=await user.save();
-         const token = await savedUser.getJWT();
-        res.cookie("token", token,{
-                expires:new Date(Date.now()+8*3600000)
-        });
+        await user.save();
         const userResponse=user.toObject();
         delete userResponse.password;
         res.status(201).json({
             success:true,
             message:"User Created Successfully",
-            user:savedUser
+            user:userResponse
         });
     } catch (error) {
         console.log(error);
@@ -63,9 +59,13 @@ authRouter.post("/login", async (req, res) => {
         const isPasswordValid =await user.validatePassword(password);
         if (isPasswordValid) {
             const token = await user.getJWT();
+<<<<<<< HEAD
             res.cookie("token", token,{
                 expires:new Date(Date.now()+8*3600000)
             });
+=======
+            res.cookie("token", token);
+>>>>>>> 84dee121be07fac4a43d8727508d6e2a8b338565
             res.status(200).json({
                 success:true,
                 message:"Logged Successfully",
