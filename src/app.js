@@ -9,7 +9,7 @@ app.use(express.json());
 app.use(express.urlencoded({extended:true}))
 app.use(cookieParser());
 app.use(cors({
-    origin:"http://localhost:5173",
+    origin:["http://localhost:5173","https://dev-tinder-mu-lyart.vercel.app/"],
     credentials:true
 }))
 
@@ -26,8 +26,8 @@ app.use("/",requestsRouter);
 connectDB()
     .then(() => {
         console.log("DB CONNECTED SUCCESSFULLY")
-        app.listen(3000, (req, res) => {
-            console.log("Server is started");
+        app.listen(process.env.PORT, (req, res) => {
+            console.log("Server is started "+process.env.PORT || 3000);
         });
     })
     .catch(err => { console.log(err) });
