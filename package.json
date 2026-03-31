@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "node src/app.js",
+    "build": "babel src -d dist",
     "dev": "npx nodemon src/app.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -25,5 +26,11 @@
     "mongoose": "^9.0.2",
     "multer": "^2.0.2",
     "validator": "^13.15.26"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.28.6",
+    "@babel/core": "^7.29.0",
+    "@babel/preset-env": "^7.29.2",
+    "copyfiles": "^2.4.1"
   }
 }
